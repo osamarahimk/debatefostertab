@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Debate Tabulator</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --font-body: 'Inter', sans-serif;
+            --color-text: #ffffff;
+            --color-text-secondary: #e0e0e0;
+            --color-text-tertiary: #b0b0b0;
+            --border-radius: 16px;
+            --rainbow-gradient: conic-gradient(from 180deg at 50% 50%, #ffc700, #ff006a, #7000ff, #00bfff, #00ff87, #ffc700);
+        }
+
+        body {
+            font-family: var(--font-body);
+            color: var(--color-text);
+            background-color: #000;
+            background-image: url('https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=2029&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            overflow-x: hidden;
+        }
+
+        #root {
+            backdrop-filter: blur(40px) saturate(180%);
+            -webkit-backdrop-filter: blur(40px) saturate(180%);
+            background: rgba(10, 10, 10, 0.25);
+            min-height: 100vh;
+        }
+
+        .glass-card {
+            position: relative;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: var(--border-radius);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+        
+        .glass-card > * {
+            position: relative; /* Ensures content sits above the pseudo-element */
+        }
+
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            padding: 1px; /* border thickness */
+            background: var(--rainbow-gradient);
+            -webkit-mask:
+                linear-gradient(#fff 0 0) content-box,
+                linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        .modal-backdrop {
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        /* Input component base styles */
+        .Input-base {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--color-text);
+            border-radius: 8px;
+            padding: 0.625rem;
+            width: 100%;
+            display: block;
+            transition: all 0.3s ease;
+            font-size: 0.875rem;
+        }
+        .Input-base::placeholder { color: var(--color-text-tertiary); }
+        .Input-base:focus {
+            outline: none;
+            box-shadow: 0 0 15px 0px rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        /* Button component variants */
+        .Button-primary {
+            background: linear-gradient(45deg, rgba(255,255,255,0.2), rgba(255,255,255,0.1));
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+        }
+        .Button-primary:hover {
+            background: linear-gradient(45deg, rgba(255,255,255,0.3), rgba(255,255,255,0.2));
+        }
+
+        .Button-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--color-text-secondary);
+        }
+        .Button-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--color-text);
+        }
+
+        .Button-danger {
+            background: rgba(255, 0, 80, 0.5);
+            border: 1px solid rgba(255, 0, 80, 0.8);
+            color: white;
+        }
+        .Button-danger:hover { background: rgba(255, 0, 80, 0.7); }
+
+        .Button-ghost {
+            background: transparent;
+            border-color: transparent;
+            color: var(--color-text-secondary);
+        }
+        .Button-ghost:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--color-text);
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.4); }
+
+        /* Sidebar specific styles */
+        .sidebar-bg {
+            background-color: rgba(255, 255, 255, 0.05) !important;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .sidebar-button-active {
+            background: linear-gradient(90deg, rgba(255,255,255,0.2), rgba(255,255,255,0.1));
+            color: white;
+            box-shadow: 0 0 10px rgba(255,255,255,0.3);
+        }
+        .sidebar-button-inactive { color: var(--color-text-secondary); }
+        .sidebar-button-inactive:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        /* Table styles */
+        table thead { border-color: rgba(255, 255, 255, 0.2); }
+        table tbody tr { border-color: rgba(255, 255, 255, 0.15); }
+        table { border-collapse: separate; border-spacing: 0; }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.29.1",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "uuid": "https://aistudiocdn.com/uuid@^13.0.0"
+  }
+}
+</script>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+</body>
+</html>

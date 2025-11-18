@@ -1,0 +1,5 @@
+{
+  "name": "Debate Tabulator",
+  "description": "An application for managing and tabulating British Parliamentary debate tournaments.",
+  "requestFramePermissions": []
+}
